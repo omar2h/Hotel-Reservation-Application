@@ -10,41 +10,48 @@ import model.IRoom;
 import model.Reservation;
 import model.Room;
 import model.RoomType;
+import service.CustomerService;
+import service.ReservationService;
 
 public class HotelResource {
     private static HotelResource hotelResourceInstance;
+    private static ReservationService reservationService = ReservationService.getReservationService();
+    private static CustomerService customerService = CustomerService.getCustomerService();
 
     private HotelResource(){}
 
-    public HotelResource getHotelResource(){
+    public static HotelResource getHotelResource(){
         if(hotelResourceInstance == null)
             hotelResourceInstance = new HotelResource();
         return hotelResourceInstance;
     }
 
-    public Customer getCustomer(String email){
-        return new Customer("email", "email", "email");
+    public Customer getCustomer(String email) throws IllegalArgumentException {
+        return customerService.getCustomer(email);
     }
 
-    public void createACustomer(String email, String firstName, String lastName){
-
+    public void createACustomer(String email, String firstName, String lastName) throws IllegalArgumentException {
+        customerService.addCustomer(email, firstName, lastName);
     }
 
-    public IRoom getRoom(String roomNumber){
-        return new Room("roomNumber", 0, RoomType.SINGLE);
+    public IRoom getRoom(String roomNumber) throws IllegalArgumentException {
+        return reservationService.getARoom(roomNumber);
     }
 
-    public Reservation bookARoom(String customerEmail, IRoom room, LocalDate checkInDate, LocalDate checkOutDate){
-        return new Reservation(new Customer(customerEmail, customerEmail, customerEmail),
-        new Room("customerEmail", 0, RoomType.SINGLE),
-        checkInDate, checkOutDate);
+    public Reservation bookARoom(String customerEmail,
+                                IRoom room,
+                                LocalDate checkInDate,
+                                LocalDate checkOutDate) throws IllegalArgumentException {
+        Customer customer = customerService.getCustomer(customerEmail);
+        return reservationService.reserveARoom(customer, room, checkInDate, checkOutDate);
     }
 
-    public Collection<Reservation> getCustomerReservations(String customerEmail){
-        return (Collection<Reservation>) new HashMap();
+    public Collection<Reservation> getCustomerReservations(String customerEmail) throws IllegalArgumentException {
+        Customer customer = customerService.getCustomer(customerEmail);
+        return reservationService.getCustomerReservations(customer);
     }
 
-    public Collection<IRoom> findARoom(Date checkInDate, Date checkOuDate){
-        return (Collection<IRoom>) new HashMap();
+    public Collection<IRoom> findARoom(LocalDate checkInDate, LocalDate checkOuDate){
+        return reservationService.findRooms(checkInDate, checkOuDate);
     }
 }

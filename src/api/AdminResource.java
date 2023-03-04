@@ -6,9 +6,13 @@ import java.util.List;
 
 import model.Customer;
 import model.IRoom;
+import service.CustomerService;
+import service.ReservationService;
 
 public class AdminResource {
     private static AdminResource adminResourceInstance;
+    private static ReservationService reservationService = ReservationService.getReservationService();
+    private static CustomerService customerService = CustomerService.getCustomerService();
 
     private AdminResource(){}
 
@@ -19,22 +23,27 @@ public class AdminResource {
     }
 
     public Customer getCustomer(String email){
-        return new Customer("null", "null", "null");
+        return customerService.getCustomer(email);
     }
 
-    public void addRoom(List<IRoom> rooms){
-        ;
+    public void addRoom(IRoom room){
+        reservationService.addRoom(room);
+    }
+
+    public void addRooms(List<IRoom> rooms){
+        for(IRoom room : rooms)
+            reservationService.addRoom(room);
     }
 
     public Collection<IRoom> getAllRooms(){
-        return (Collection<IRoom>) new HashMap();
+        return reservationService.getAllRooms();
     }
 
     public Collection<Customer> getAllCustomers(){
-        return (Collection<Customer>) new HashMap();
+        return customerService.getAllCustomers();
     }
 
     public void displayAllReservations(){
-        ;
+        reservationService.printAllReservations();
     }
 }

@@ -89,6 +89,10 @@ public class ReservationService {
         return reservationsData.get(customer);
     }
 
+    public Collection<IRoom> getAllRooms(){
+        return roomsData.values();
+    }
+
     public void printAllReservations(){
         Collection<Reservation> allReservations = getAllReservations();
         for(Reservation res: allReservations)
@@ -120,5 +124,4 @@ public class ReservationService {
                     allRooms.remove(entry.getKey().getRoomNumber());
         return allRooms.values();
     }
-
 }
