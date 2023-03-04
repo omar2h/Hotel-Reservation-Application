@@ -67,9 +67,6 @@ public class ReservationService {
     public Reservation reserveARoom(Customer customer, IRoom room, LocalDate checkInDate, LocalDate checkOutDate){
         Reservation reservation = new Reservation(customer, room, checkInDate, checkOutDate);
         reservationsData.computeIfAbsent(customer, k -> new ArrayList<>());
-        // if(!reservationsData.containsKey(customer))
-        //     reservationsData.put(customer, new ArrayList<>());
-
         reservationsData.get(customer).add(reservation);
         return reservation;
     }
@@ -80,20 +77,12 @@ public class ReservationService {
 
         for(Reservation res: allReservations){
             IRoom room = res.getRoom();
-            if(!room2dates.containsKey(res.getRoom())){
-                room2dates.put(room, new ArrayList<>());
-            }
+            room2dates.computeIfAbsent(room, k -> new ArrayList<>());
             room2dates.get(room).add(new DatePair(res.getCheckInDate(), res.getCheckInDate()));
         }
-
         Map<String, IRoom> allRooms = new HashMap<>();
         allRooms.putAll(roomsData);
-
-        for(Map.Entry<IRoom, List<DatePair>> entry: room2dates.entrySet())
-            for(DatePair datePair : entry.getValue())
-                if(datePair.isOverlapping(checkInDate, checkOutDate))
-                    allRooms.remove(entry.getKey().getRoomNumber());
-        return allRooms.values();
+        return removeReservedRooms(allRooms, room2dates, checkInDate, checkOutDate);
     }
 
     public Collection<Reservation> getCustomerReservations(Customer customer){
@@ -120,6 +109,16 @@ public class ReservationService {
             for(Reservation res : reservationList)
                 allReservations.add(res);
         return allReservations;
+    }
+
+    private Collection<IRoom> removeReservedRooms(Map<String, IRoom> allRooms,
+                            Map<IRoom, List<DatePair>> room2dates,
+                            LocalDate checkInDate, LocalDate checkOutDate){
+        for(Map.Entry<IRoom, List<DatePair>> entry: room2dates.entrySet())
+            for(DatePair datePair : entry.getValue())
+                if(datePair.isOverlapping(checkInDate, checkOutDate))
+                    allRooms.remove(entry.getKey().getRoomNumber());
+        return allRooms.values();
     }
 
 }
