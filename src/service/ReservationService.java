@@ -109,6 +109,11 @@ public class ReservationService {
         }
     }
 
+    public void printAllRooms(){
+        Collection<IRoom> allRooms = roomsData.values();
+        System.out.println(allRooms);
+    }
+
     private Collection<Reservation> getAllReservations(){
         Collection<Reservation> allReservations = new ArrayList<>();
         for(Collection<Reservation> reservationList : reservationsData.values())
@@ -116,4 +121,5 @@ public class ReservationService {
                 allReservations.add(res);
         return allReservations;
     }
+
 }
