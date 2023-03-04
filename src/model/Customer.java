@@ -34,4 +34,19 @@ public class Customer {
     public String toString(){
         return "First Name: " + getFirstName() + " Last Name: " + getLastName() + " E-mail: " + getEmail();
     }
+
+    @Override
+    public int hashCode(){
+        return email.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj){
+        if(this == obj)
+            return true;
+        if((obj == null) || obj.getClass() != this.getClass())
+            return false;
+        Customer tmp = (Customer)obj;
+        return this.email == tmp.email || (email != null && email.equals(tmp.email));
+    }
 }

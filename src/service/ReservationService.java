@@ -2,7 +2,7 @@ package service;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -15,24 +15,24 @@ import model.RoomType;
 
 public class ReservationService {
     private class DatePair{
-        private Date checkIn;
-        private Date checkOut;
+        private LocalDate checkIn;
+        private LocalDate checkOut;
         
-        public DatePair(Date checkIn, Date checkOut){
+        public DatePair(LocalDate checkIn, LocalDate checkOut){
             this.checkIn = checkIn;
             this.checkOut = checkOut;
         }
 
-        public Date getCheckIn(){
+        public LocalDate getCheckIn(){
             return checkIn;
         }
 
-        public Date getCheckOut(){
+        public LocalDate getCheckOut(){
             return checkOut;
         }
 
-        public boolean isOverlapping(Date in, Date out){
-            return !(out.before(checkIn) || in.after(checkOut));
+        public boolean isOverlapping(LocalDate in, LocalDate out){
+            return !(out.isBefore(checkIn) || in.isAfter(checkOut));
         }
 
     }
@@ -64,16 +64,17 @@ public class ReservationService {
         return roomsData.get(roomId);
     }
 
-    public Reservation reserveARoom(Customer customer, IRoom room, Date checkInDate, Date checkOutDate){
+    public Reservation reserveARoom(Customer customer, IRoom room, LocalDate checkInDate, LocalDate checkOutDate){
         Reservation reservation = new Reservation(customer, room, checkInDate, checkOutDate);
-        if(!reservationsData.containsKey(customer))
-            reservationsData.put(customer, new ArrayList<>());
+        reservationsData.computeIfAbsent(customer, k -> new ArrayList<>());
+        // if(!reservationsData.containsKey(customer))
+        //     reservationsData.put(customer, new ArrayList<>());
 
         reservationsData.get(customer).add(reservation);
         return reservation;
     }
 
-    public Collection<IRoom> findRooms(Date checkInDate, Date checkOutDate){
+    public Collection<IRoom> findRooms(LocalDate checkInDate, LocalDate checkOutDate){
         Map<IRoom, List<DatePair>> room2dates = new HashMap<>();
         Collection<Reservation> allReservations = getAllReservations();
 

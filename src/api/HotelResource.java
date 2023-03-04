@@ -1,5 +1,6 @@
 package api;
 
+import java.time.LocalDate;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -33,7 +34,7 @@ public class HotelResource {
         return new Room("roomNumber", 0, RoomType.SINGLE);
     }
 
-    public Reservation bookARoom(String customerEmail, IRoom room, Date checkInDate, Date checkOutDate){
+    public Reservation bookARoom(String customerEmail, IRoom room, LocalDate checkInDate, LocalDate checkOutDate){
         return new Reservation(new Customer(customerEmail, customerEmail, customerEmail),
         new Room("customerEmail", 0, RoomType.SINGLE),
         checkInDate, checkOutDate);

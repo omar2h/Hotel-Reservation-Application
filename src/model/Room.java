@@ -36,4 +36,19 @@ public class Room implements IRoom {
         return "Room Number: " + getRoomNumber() + " RoomType: " + getRoomType() + " Price: $" + getRoomPrice();
     }
 
+    @Override
+    public int hashCode(){
+        return roomNumber.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj){
+        if(this == obj)
+            return true;
+        if((obj == null) || obj.getClass() != this.getClass())
+            return false;
+        Room tmp = (Room)obj;
+        return this.roomNumber == tmp.roomNumber || (roomNumber != null && roomNumber.equals(tmp.roomNumber));
+    }
+
 }
