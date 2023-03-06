@@ -3,7 +3,7 @@ package util.printer;
 import java.util.List;
 
 public class MenuPrinter implements Printer {
-    public void print(List<String> items){
+    public void print(List<Object> items){
         System.out.println();
         System.out.println("----------------------------------");
         for(int i=0; i< items.size(); i++){

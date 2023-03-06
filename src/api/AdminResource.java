@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 
+import exceptions.EmailNotFoundException;
 import model.Customer;
 import model.IRoom;
 import service.CustomerService;
@@ -22,7 +23,7 @@ public class AdminResource {
         return adminResourceInstance;
     }
 
-    public Customer getCustomer(String email){
+    public Customer getCustomer(String email) throws EmailNotFoundException{
         return customerService.getCustomer(email);
     }
 

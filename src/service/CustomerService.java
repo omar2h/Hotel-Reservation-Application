@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+import exceptions.EmailNotFoundException;
 import model.Customer;
 
 public class CustomerService {
@@ -28,9 +29,9 @@ public class CustomerService {
         customersData.put(email, new Customer(firstName, lastName, email));
     }
 
-    public Customer getCustomer(String customerEmail) throws IllegalArgumentException {
+    public Customer getCustomer(String customerEmail) throws EmailNotFoundException {
         if(!customersData.containsKey(customerEmail))
-            throw new IllegalArgumentException("Email does not exist");
+            throw new EmailNotFoundException("Email not found: " + customerEmail);
 
         return customersData.get(customerEmail);
     }

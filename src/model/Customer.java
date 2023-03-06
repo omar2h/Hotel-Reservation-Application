@@ -1,15 +1,17 @@
 package model;
 
-import util.validator.EmailValidator;
+import util.validator.StringValidator;
+import util.validator.Validator;
 
 public class Customer {
+    private final String EMAIL_REGEX = "^(.+)@(.+)\\.(.+)$";
     private String firstName;
     private String lastName;
     private String email;
 
     public Customer(String firstName, String lastName, String email) throws IllegalArgumentException {
-        EmailValidator emailValidator = new EmailValidator();
-        if(!emailValidator.isValid(email)){
+        Validator validator = new StringValidator();
+        if(!validator.isValid(email, EMAIL_REGEX)){
             throw new IllegalArgumentException("Invalid E-mail");
         }
 
