@@ -46,22 +46,37 @@ public class MainMenu {
         return UserInput.scanInput(scanner, upperLimit, "", false);
     }
 
-    public static void run(Scanner scanner, int option){
+    public static void start(Scanner scanner){
+        boolean[] mainIsRunning = new boolean[] {true};
+        while(mainIsRunning[0]){
+            try{
+                MainMenu.display();
+                int option = getInput(scanner, getMenuItemsSize());
+                run(scanner, option, mainIsRunning);
+            }catch(IllegalArgumentException e){
+                System.out.println();
+                System.out.println(e.getMessage());
+                continue;
+            }
+        }
+    }
+
+    public static void run(Scanner scanner, int option, boolean[] mainIsRunning){
         switch (option) {
             case 1:
                 reserve(scanner);
                 break;
             case 2:
-                
+                getCustomerReservations(scanner);
                 break;
             case 3:
-                
+                createAccount(scanner);
                 break;
             case 4:
-                
+                startAdminMenu(scanner);
                 break;
             case 5:
-                
+                mainIsRunning[0] = false;
                 break;
         
             default:
@@ -101,70 +116,62 @@ public class MainMenu {
         }
     }
 
-    public static int getMenuItemsSize(){
-        return menuItems.size();
-    }
-
-    private static LocalDate getDate(Scanner scanner, String dateName) throws IllegalArgumentException {
-        String date;
-        System.out.println("Enter "+ dateName + " Date in this format dd/mm/yyyy. Example 01/01/2020");
-        date = scanner.nextLine();
-        validator = new DateValidator();
-        if(!validator.isValid(date, DATE_REGEX))
-            throw new IllegalArgumentException("Enter Date in this format dd/mm/yyyy. Example 01/01/2020");
-
-        DateTimeFormatter f = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-        return LocalDate.parse(date, f);
-    }
-
-    private static void displayAvailableRooms(Collection<IRoom> rooms){
-        printer = new OptionsPrinter();
-        List<Object> availableRoomsStr = new ArrayList<>();
-        for(IRoom room: rooms)
-            availableRoomsStr.add(room.toString());
-        printer.print(availableRoomsStr);
-    }
-
-    private static String getCustomerEmail(Scanner scanner) {
-        boolean validEmail = false;
+    public static void getCustomerReservations(Scanner scanner){
+        String email = "";
         Customer customer;
-        String email = "", firstName, lastName;
-        validator = new StringValidator();
-        String ans;
-        
-        while(true){
-            try {
-                ans = UserInput.scanInput(scanner, yesNoAnswers, "Do you have an account with us? y/n", "Enter y or n");
-                while(!validEmail){
-                    try{
-                        System.out.println("Enter your E-mail");
-                        email = scanner.nextLine().trim().toLowerCase();
-                        if(!validator.isValid(email, EMAIL_REGEX))
-                            throw new InvalidEmailException("Invalid email");
-                        validEmail = true;
-                    }catch(Exception e){
-                        System.out.println();
-                        System.out.println(e.getLocalizedMessage());
-                    }
-                }
-                if(ans.equalsIgnoreCase("y"))
-                    customer = hotelResource.getCustomer(email);
-                else{
-                    System.out.println("Enter your First Name");
-                    firstName = scanner.nextLine().trim();
+        Collection<Reservation> reservations;
+        email = getEmail(scanner);
+        try{
+            customer = hotelResource.getCustomer(email);
+            reservations = hotelResource.getCustomerReservations(email);
+            if(reservations.isEmpty()){
+                System.out.println();
+                System.out.println("No reservations found for " + email);
+                return;
+            }
 
-                    System.out.println("Enter your Last Name");
-                    lastName = scanner.nextLine().trim();
-                    hotelResource.createACustomer(email, firstName, lastName);
-                }
+            for(Reservation reservation: reservations){
+                System.out.println(reservation);
+            }
+        } catch(Exception e){
+            System.out.println();
+            System.out.println("Customer not found");
+        }
+    }
+
+    public static void createAccount(Scanner scanner){
+        String email = "";
+        String firstName = "";
+        String lastName = "";
+
+        try{
+            email = getEmail(scanner);
+            System.out.println("Enter your First Name");
+            firstName = scanner.nextLine().trim();
+            
+            System.out.println("Enter your Last Name");
+            lastName = scanner.nextLine().trim();
+            hotelResource.createACustomer(email, firstName, lastName);
+        }catch(Exception e){
+            System.out.println();
+            System.out.println(e.getLocalizedMessage());
+        }
+    }
+
+    public static void startAdminMenu(Scanner scanner){
+        while(true){
+            try{
+                AdminMenu.start(scanner);
                 break;
-            } catch (Exception e) {
+            }catch(Exception e){
                 System.out.println();
                 System.out.println(e.getLocalizedMessage());
-                continue;
-            }  
+            }
         }
-        return email;
+    }
+
+    public static int getMenuItemsSize(){
+        return menuItems.size();
     }
 
     private static LocalDate[] getDates(Scanner scanner) {
@@ -191,6 +198,55 @@ public class MainMenu {
             }
         }
         return new LocalDate[] {checkInDate, checkOutDate};
+    }
+    
+    private static void displayAvailableRooms(Collection<IRoom> rooms){
+        printer = new OptionsPrinter();
+        List<Object> availableRoomsStr = new ArrayList<>();
+        for(IRoom room: rooms)
+        availableRoomsStr.add(room.toString());
+        printer.print(availableRoomsStr);
+    }
+    
+    private static String getCustomerEmail(Scanner scanner) {
+        Customer customer;
+        String email = "", firstName, lastName;
+        String ans;
+        
+        while(true){
+            try {
+                ans = UserInput.scanInput(scanner, yesNoAnswers, "Do you have an account with us? y/n", "Enter y or n");
+                email = getEmail(scanner);
+                if(ans.equalsIgnoreCase("y"))
+                    customer = hotelResource.getCustomer(email);
+                else{
+                    System.out.println("Enter your First Name");
+                    firstName = scanner.nextLine().trim();
+                    
+                    System.out.println("Enter your Last Name");
+                    lastName = scanner.nextLine().trim();
+                    hotelResource.createACustomer(email, firstName, lastName);
+                }
+                break;
+            } catch (Exception e) {
+                System.out.println();
+                System.out.println(e.getLocalizedMessage());
+                continue;
+            }  
+        }
+        return email;
+    }
+    
+    private static LocalDate getDate(Scanner scanner, String dateName) throws IllegalArgumentException {
+        String date;
+        System.out.println("Enter "+ dateName + " Date in this format dd/mm/yyyy. Example 01/01/2020");
+        date = scanner.nextLine();
+        validator = new DateValidator();
+        if(!validator.isValid(date, DATE_REGEX))
+            throw new IllegalArgumentException("Enter Date in this format dd/mm/yyyy. Example 01/01/2020");
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        return LocalDate.parse(date, formatter);
     }
 
     private static boolean askCustomerToBook(Scanner scanner, Collection<IRoom> rooms){
@@ -229,5 +285,24 @@ public class MainMenu {
             }
         }
         return roomsList.get(roomChoice-1);
+    }
+
+    private static String getEmail(Scanner scanner){
+        validator = new StringValidator();
+        boolean validEmail = false;
+        String email = "";
+        while(!validEmail){
+            try{
+                System.out.println("Enter your E-mail");
+                email = scanner.nextLine().trim().toLowerCase();
+                if(!validator.isValid(email, EMAIL_REGEX))
+                    throw new InvalidEmailException("Invalid email");
+                validEmail = true;
+            }catch(Exception e){
+                System.out.println();
+                System.out.println(e.getLocalizedMessage());
+            }
+        }
+        return email;
     }
 }
