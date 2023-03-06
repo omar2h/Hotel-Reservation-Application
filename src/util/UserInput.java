@@ -3,6 +3,9 @@ package util;
 import java.util.List;
 import java.util.Scanner;
 
+import util.validator.StringValidator;
+import util.validator.Validator;
+
 public class UserInput {
     public static int scanInput(Scanner scanner, int upperLimit, String s, boolean cancel){
         if(!s.isEmpty())
@@ -26,6 +29,16 @@ public class UserInput {
 
         if(!options.contains(input))
             throw new IllegalArgumentException(err);
+        return input;
+    }
+
+    public static String scanInput(Scanner scanner, String s, String regex){
+        Validator validator = new StringValidator();
+        if(!s.isEmpty())
+            System.out.println(s);
+        String input = scanner.nextLine().trim();
+        if(!validator.isValid(input, regex))
+            throw new IllegalArgumentException("Invalid input!");
         return input;
     }
 }

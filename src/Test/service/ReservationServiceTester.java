@@ -5,6 +5,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.Collection;
 import java.util.regex.Pattern;
 
+import api.HotelResource;
 import model.Customer;
 import model.IRoom;
 import model.Reservation;
@@ -14,7 +15,9 @@ import service.ReservationService;
 
 public class ReservationServiceTester {
     static ReservationService reservationService = ReservationService.getReservationService();
-    public static void AddRoom(){
+    private static HotelResource hotelResource = HotelResource.getHotelResource();
+
+    public static void addRoom(){
         IRoom room1 = new Room("100", 150, RoomType.SINGLE);
         IRoom room2 = new Room("200", 150, RoomType.SINGLE);
         IRoom room3 = new Room("300", 150, RoomType.DOUBLE);
@@ -27,7 +30,7 @@ public class ReservationServiceTester {
         reservationService.printAllRooms();
     }
 
-    public static void AddDuplicateRoom() throws IllegalArgumentException {
+    public static void addDuplicateRoom() throws IllegalArgumentException {
         IRoom room1 = new Room("100", 150, RoomType.SINGLE);
         IRoom room2 = new Room("100", 150, RoomType.SINGLE);
         IRoom room3 = new Room("300", 150, RoomType.DOUBLE);
@@ -40,7 +43,7 @@ public class ReservationServiceTester {
         reservationService.printAllRooms();
     }
 
-    public static void ReserveARoom() throws IllegalArgumentException {
+    public static void reserveARoom() throws IllegalArgumentException {
         Customer customer1 = new Customer("null", "null", "a@a.com");
         IRoom room1 = new Room("100", 150, RoomType.SINGLE);
 
@@ -52,6 +55,7 @@ public class ReservationServiceTester {
         LocalDate myDateObj2 = LocalDate.parse(dateStr2, f);
 
         Reservation res = reservationService.reserveARoom(customer1, room1, myDateObj1, myDateObj2);
+        hotelResource.createACustomer(customer1.getEmail(), customer1.getFirstName(), customer1.getLastName());
 
         System.out.println(res);
         System.out.println();
@@ -72,8 +76,8 @@ public class ReservationServiceTester {
     public static void main(String[] args) {
         try{
             
-            AddRoom();
-            ReserveARoom();
+            addRoom();
+            reserveARoom();
             findARoom();
 
         }catch(Exception e){

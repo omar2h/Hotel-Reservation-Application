@@ -1,9 +1,10 @@
 package model;
 
 import java.time.LocalDate;
-import java.util.Date;
+import java.time.format.DateTimeFormatter;
 
 public class Reservation {
+    static DateTimeFormatter f = DateTimeFormatter.ofPattern("dd/MM/yyyy");
     private Customer customer;
     private IRoom room;
     private LocalDate checkInDate;
@@ -35,7 +36,7 @@ public class Reservation {
 
     @Override
     public String toString(){
-        return getCustomer().toString() + "\n" + getRoom() + "\n" +
-        "Check In Date: " + getCheckInDate() + " Check Out Date: " + getCheckOutDate();
+        return getCustomer().getFirstName() + " " + getCustomer().getLastName() + "\n" + getRoom() + "\n" +
+        "Check In Date: " + f.format(getCheckInDate()) + " Check Out Date: " + f.format(getCheckOutDate());
     }
 }

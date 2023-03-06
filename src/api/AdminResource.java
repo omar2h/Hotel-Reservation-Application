@@ -17,9 +17,9 @@ public class AdminResource {
 
     private AdminResource(){}
 
-    public AdminResource getAdminResource(){
+    public static AdminResource getAdminResource(){
         if(adminResourceInstance == null)
-            return adminResourceInstance;
+            adminResourceInstance = new AdminResource();
         return adminResourceInstance;
     }
 
